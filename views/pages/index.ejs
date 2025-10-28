@@ -1,0 +1,20 @@
+<%- include('../partials/head') %>
+
+<%- include('../partials/header') %>
+
+<section id="apresentacao">
+    <h2>Seja bem-vindo(a) ao meu Portfólio!</h2>
+    
+    <img src="<%= dados.apresentacao.foto %>" alt="Foto de <%= dados.apresentacao.nome %>" class="minha-foto">
+    
+    <h3>Sobre Mim</h3>
+    <p><%= dados.apresentacao.biografia %></p>
+    
+    <h3>Contato</h3>
+    <ul>
+        <li>Email: <a href="mailto:<%= dados.apresentacao.contato.email %>"><%= dados.apresentacao.contato.email %></a></li>
+        <li>Telefone: <%= dados.apresentacao.contato.telefone %></li>
+    </ul>
+</section>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,18 @@
+<%- include('../partials/head') %>
+
+<%- include('../partials/header') %>
+
+<section id="formacao">
+    <h2>Minha Formação Acadêmica</h2>
+
+    <% dados.formacao.forEach(f => { %>
+        <article class="item-lista">
+            <h3><%= f.curso %></h3>
+            <p><strong>Instituição:</strong> <%= f.instituicao %></p>
+            <p><strong>Período:</strong> <%= f.periodo %></p>
+        </article>
+    <% }) %>
+    
+</section>
+
+<%- include('../partials/footer') %>

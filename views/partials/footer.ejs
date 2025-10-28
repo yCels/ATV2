@@ -1,0 +1,22 @@
+</main>
+
+<footer>
+    <h3>Links Profissionais (Requisito 6)</h3>
+    
+    <ul>
+        <% dados.linksRedes.forEach(link => { %>
+            
+            <li>
+                <a href="<%= link.url %>" target="_blank" rel="noopener noreferrer">
+                    <%= link.nome %>
+                </a>
+            </li>
+
+        <% }) %>
+    </ul>
+    
+    <p>&copy; 2025 - Feito com Node.js e EJS por <%= dados.apresentacao.nome %></p>
+</footer>
+
+</body>
+</html>

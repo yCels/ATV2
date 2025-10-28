@@ -1,0 +1,30 @@
+<%- include('../partials/head') %>
+
+<%- include('../partials/header') %>
+
+<section id="competencias">
+    <h2>Competências Técnicas e Interpessoais</h2>
+
+    <div class="competencias-container">
+        <article class="lista-competencias">
+            <h3>Competências Técnicas (Hard Skills)</h3>
+            <ul>
+                <% dados.competencias.tecnicas.forEach(skill => { %>
+                    <li><%= skill %></li>
+                <% }) %>
+            </ul>
+        </article>
+        
+        <article class="lista-competencias">
+            <h3>Competências Interpessoais (Soft Skills)</h3>
+            <ul>
+                <% dados.competencias.interpessoais.forEach(skill => { %>
+                    <li><%= skill %></li>
+                <% }) %>
+            </ul>
+        </article>
+    </div>
+    
+</section>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,25 @@
+<%- include('../partials/head') %>
+
+<%- include('../partials/header') %>
+
+<section id="projetos">
+    <h2>Projetos Desenvolvidos</h2>
+
+    <% dados.projetos.forEach(p => { %>
+        <article class="item-lista">
+            <h3><%= p.nome %></h3>
+            <p><%= p.descricao %></p>
+            
+            <h4>Tecnologias utilizadas:</h4>
+            <ul>
+                <% p.tecnologias.forEach(tech => { %>
+                    <li><%= tech %></li>
+                <% }) %>
+            </ul>
+            
+        </article>
+    <% }) %>
+    
+</section>
+
+<%- include('../partials/footer') %>

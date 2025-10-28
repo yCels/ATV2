@@ -1,0 +1,155 @@
+/* --- Reset Básico e Configurações Gerais --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Faz o 'padding' não aumentar o tamanho da caixa */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4; /* Um cinza bem clarinho */
+    color: #333; /* Cor principal do texto */
+    display: flex; /* <-- Mágica do Flexbox! */
+    flex-direction: column; /* Organiza os filhos (header, main, footer) em coluna */
+    min-height: 100vh; /* Garante que o corpo ocupe 100% da altura da tela */
+}
+
+a {
+    color: #007bff; /* Um azul padrão de link */
+    text-decoration: none; /* Tira o sublinhado */
+}
+
+a:hover {
+    text-decoration: underline; /* Devolve o sublinhado ao passar o mouse */
+}
+
+ul {
+    list-style-type: none; /* Tira as "bolinhas" das listas */
+}
+
+img.minha-foto {
+    max-width: 200px;
+    height: auto;
+    border-radius: 50%; /* Deixa a foto redonda */
+    border: 3px solid #ddd;
+    margin: 20px 0;
+}
+
+/* --- Estrutura: Header, Main, Footer --- */
+
+/* 1. O Menu (header.ejs) */
+header {
+    background-color: #333; /* Fundo escuro */
+    color: #fff; /* Texto branco */
+    padding: 1rem 0;
+    width: 100%;
+}
+
+header nav {
+    max-width: 960px; /* Largura máxima do conteúdo */
+    margin: 0 auto; /* Centraliza o <nav> */
+    display: flex;
+    justify-content: space-between; /* H1 de um lado, UL do outro */
+    align-items: center;
+    padding: 0 20px;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+header nav ul {
+    display: flex;
+}
+
+header nav ul li {
+    margin-left: 20px; /* Espaçamento entre os links do menu */
+}
+
+header nav ul li a {
+    color: #fff; /* Links do menu em branco */
+    font-weight: bold;
+}
+
+/* 2. O Conteúdo Principal (<main>) */
+main {
+    flex-grow: 1; /* <-- Mágica do Flexbox! Faz o <main> "crescer" e empurrar o footer para baixo */
+    width: 100%;
+    max-width: 960px; /* Mesma largura máxima do header */
+    margin: 20px auto; /* Centraliza e dá um respiro */
+    padding: 0 20px;
+}
+
+/* 3. O Rodapé (footer.ejs) */
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 2rem 0;
+    width: 100%;
+}
+
+footer ul {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+footer ul li {
+    margin: 0 15px;
+}
+
+footer ul li a {
+    color: #fff;
+}
+
+/* --- Estilização do Conteúdo (As seções das páginas) --- */
+
+section {
+    background-color: #fff; /* Fundo branco para o "miolo" */
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Uma sombra leve */
+}
+
+section h2 {
+    color: #333;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #f4f4f4;
+    padding-bottom: 0.5rem;
+}
+
+section h3 {
+    color: #555;
+    margin-bottom: 0.5rem;
+}
+
+/* Estilo dos "blocos" (para projetos, cursos, formação) */
+.item-lista {
+    border: 1px solid #eee;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+}
+
+.item-lista h3 {
+    color: #007bff;
+}
+
+/* Estilo específico para as competências (para ficarem lado a lado) */
+.competencias-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem; /* Espaço entre as colunas */
+}
+
+.lista-competencias {
+    width: 48%; /* Cada coluna ocupa quase metade */
+}
+
+.lista-competencias ul li {
+    padding: 0.5rem;
+    border-bottom: 1px dotted #ccc;
+}
