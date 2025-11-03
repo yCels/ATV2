@@ -33,4 +33,14 @@ router.put('/cursos/update/:id', portfolioController.atualizarCurso);
 router.put('/competencias/update', portfolioController.atualizarCompetencia);
 
 
+//delete
+router.delete('/projetos/delete/:id', portfolioController.deletarProjeto);
+router.delete('/formacao/delete/:id', portfolioController.deletarFormacao);
+router.delete('/cursos/delete/:id', portfolioController.deletarCurso);
+
+//esperar o 'tipo' e 'nome' no body,
+
+router.delete('/competencias/delete', portfolioController.deletarCompetencia);
+
+
 module.exports = router;

@@ -327,7 +327,80 @@ const portfolioController = {
         }
 
         res.redirect('/competencias');
+    },
+
+    deletarProjeto: (req, res) => {
+        
+        const { id } = req.params;
+
+        
+        const index = dadosPortfolio.projetos.findIndex(p => p.id == id);
+
+        // 3. Se index for > -1 (ou seja, se encontrou o item)...
+        if (index > -1) {
+            // 4. ...usamos splice() para remover 1 item daquela posição
+            dadosPortfolio.projetos.splice(index, 1);
+            console.log("Projeto deletado com ID:", id);
+        }
+
+        // 5. Redirecionamos de volta para a página
+        res.redirect('/projetos');
+    },
+
+    deletarFormacao: (req, res) => {
+        const { id } = req.params;
+        
+        // Lógica idêntica ao deletarProjeto
+        const index = dadosPortfolio.formacao.findIndex(f => f.id == id);
+
+        if (index > -1) {
+            dadosPortfolio.formacao.splice(index, 1);
+            console.log("Formação deletada com ID:", id);
+        }
+
+        res.redirect('/formacao');
+    },
+
+    deletarCurso: (req, res) => {
+        const { id } = req.params;
+        
+        // Lógica idêntica ao deletarProjeto
+        const index = dadosPortfolio.cursos.findIndex(c => c.id == id);
+
+        if (index > -1) {
+            dadosPortfolio.cursos.splice(index, 1);
+            console.log("Curso deletado com ID:", id);
+        }
+
+        res.redirect('/cursos');
+    },
+
+    deletarCompetencia: (req, res) => {
+        // 1. Pegamos os dados do body (que virão do formulário)
+        const { nome, tipo } = req.body;
+
+        let arrayCompetencias;
+        if (tipo === 'tecnica') {
+            arrayCompetencias = dadosPortfolio.competencias.tecnicas;
+        } else if (tipo === 'interpessoal') {
+            arrayCompetencias = dadosPortfolio.competencias.interpessoais;
+        }
+
+        if (arrayCompetencias && nome) {
+            // 2. Encontramos o índice da *string* no array
+            const index = arrayCompetencias.indexOf(nome);
+
+            if (index > -1) {
+                // 3. Removemos a string
+                arrayCompetencias.splice(index, 1);
+                console.log(`Competência '${nome}' deletada.`);
+            }
+        }
+
+        res.redirect('/competencias');
     }
+
+
 
 
 };
