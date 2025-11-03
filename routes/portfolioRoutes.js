@@ -24,7 +24,13 @@ router.get('/competencias', portfolioController.paginaCompetencias);
 
 //rotas post,get,delete,put:
 
-router.post('/projetos/add', portfolioController.adicionarProjeto);
+
+//post
+router.post('/projetos/add', portfolioController.adicionarProjeto); 
+
+
+//put
+router.put('/apresentacao/update', portfolioController.atualizarApresentacao);
 
 
 module.exports = router;

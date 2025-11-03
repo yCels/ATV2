@@ -23,7 +23,7 @@ const dadosPortfolio = {
         {
             curso: "Graduação em Comoutação",
             instituicao: "Nome da Universidade",
-            periodo: "2020 - 2024"
+            periodo: "2020 - 2024"   
         }
     ],
 
@@ -141,16 +141,37 @@ const portfolioController = {
         console.log("Projeto novo adicionado:", novoProjeto);
 
         res.redirect('/projetos');
-    }
+    },
 
-   
+  
     
 
+    atualizarApresentacao: (req, res) => {
+        const { nome, biografia, email, telefone } = req.body;
+
+        console.log("Recebido no PUT /apresentacao/update:", req.body);
+
+ 
+        if (nome) {
+            dadosPortfolio.apresentacao.nome = nome;
+        }
+        if (biografia) {
+            dadosPortfolio.apresentacao.biografia = biografia;
+        }
+        if (email) {
+            dadosPortfolio.apresentacao.contato.email = email;
+        }
+        if (telefone) {
+            dadosPortfolio.apresentacao.contato.telefone = telefone;
+        }
+        
+        console.log("Dados de apresentação atualizados com sucesso!");
+
+        
+        res.redirect('/');
+    }
+  
 
 };
-
-
-
-
 
 module.exports = portfolioController;
