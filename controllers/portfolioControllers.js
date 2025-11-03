@@ -1,6 +1,8 @@
 
 
 let proximoIdProjetos = 3;
+let proximoIdFormacao = 3; 
+let proximoIdCursos = 3;
 
 const dadosPortfolio = {
 
@@ -16,11 +18,13 @@ const dadosPortfolio = {
 
     formacao: [
         {
+            id: 1,
             curso: "Curso Técnico em Elétrica",
             instituicao: "Nome da Instituição de Ensino",
             periodo: "2010-2015"
         },
         {
+            id: 2,
             curso: "Graduação em Comoutação",
             instituicao: "Nome da Universidade",
             periodo: "2020 - 2024"   
@@ -29,11 +33,13 @@ const dadosPortfolio = {
 
     cursos: [
         {
+            id: 1,
             nome: "Curso de JavaScript Avançado",
             plataforma: "Plataforma (Ex: Alura, Udemy, Coursera)",
           
         },
         {
+            id: 2,
             nome: "Workshop de Metodologias Ágeis",
             plataforma: "Evento ou Instituição",
            
@@ -141,6 +147,70 @@ const portfolioController = {
         console.log("Projeto novo adicionado:", novoProjeto);
 
         res.redirect('/projetos');
+    },
+
+    adicionarFormacao: (req, res) => {
+        
+        console.log("Recebido no POST /formacao/add:", req.body);
+
+        const { curso, instituicao, periodo } = req.body;
+
+       
+        const novaFormacao = {
+            id: proximoIdFormacao,
+            curso: curso,
+            instituicao: instituicao,
+            periodo: periodo
+        };
+
+        proximoIdFormacao++;
+        dadosPortfolio.formacao.push(novaFormacao);
+        
+        console.log("Formação nova adicionada:", novaFormacao);
+
+        
+        res.redirect('/formacao');
+    },
+
+    adicionarCurso: (req, res) => {
+        console.log("Recebido no POST /cursos/add:", req.body);
+        
+       
+        const { nome, plataforma } = req.body;
+
+        
+        const novoCurso = {
+            id: proximoIdCursos,
+            nome: nome,
+            plataforma: plataforma
+        };
+
+       proximoIdCursos++;   
+        dadosPortfolio.cursos.push(novoCurso);
+        
+        console.log("Curso novo adicionado:", novoCurso);
+
+        
+        res.redirect('/cursos');
+    },
+
+    adicionarCompetencia: (req, res) => {
+        console.log("Recebido no POST /competencias/add:", req.body);
+        
+        const { nome, tipo } = req.body; 
+
+        
+        if (nome && tipo === 'tecnica') {
+            dadosPortfolio.competencias.tecnicas.push(nome);
+            console.log("Competência Técnica adicionada:", nome);
+
+        } else if (nome && tipo === 'interpessoal') {
+            dadosPortfolio.competencias.interpessoais.push(nome);
+            console.log("Competência Interpessoal adicionada:", nome);
+        }
+
+        
+        res.redirect('/competencias');
     },
 
   
