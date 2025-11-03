@@ -27,6 +27,10 @@ router.post('/competencias/add', portfolioController.adicionarCompetencia);
 
 //put
 router.put('/apresentacao/update', portfolioController.atualizarApresentacao);
+router.put('/projetos/update/:id', portfolioController.atualizarProjeto);
+router.put('/formacao/update/:id', portfolioController.atualizarFormacao);
+router.put('/cursos/update/:id', portfolioController.atualizarCurso);
+router.put('/competencias/update', portfolioController.atualizarCompetencia);
 
 
 module.exports = router;

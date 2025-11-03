@@ -1,14 +1,14 @@
 
 
 let proximoIdProjetos = 3;
-let proximoIdFormacao = 3; 
+let proximoIdFormacao = 3;
 let proximoIdCursos = 3;
 
 const dadosPortfolio = {
 
     apresentacao: {
         nome: "Celso Moreira Freitas",
-        foto: "/images/sua-foto.jpeg", 
+        foto: "/images/sua-foto.jpeg",
         biografia: "Sou estudante de Análise e Desenvolvimento de Sistemas, apaixonado por tecnologia e desenvolvimento. Este portfólio foi criado para demonstrar minhas habilidades e projetos acadêmicos usando Node.js, Express e EJS.",
         contato: {
             email: "celso5mf@gmail.com",
@@ -27,7 +27,7 @@ const dadosPortfolio = {
             id: 2,
             curso: "Graduação em Comoutação",
             instituicao: "Nome da Universidade",
-            periodo: "2020 - 2024"   
+            periodo: "2020 - 2024"
         }
     ],
 
@@ -36,13 +36,13 @@ const dadosPortfolio = {
             id: 1,
             nome: "Curso de JavaScript Avançado",
             plataforma: "Plataforma (Ex: Alura, Udemy, Coursera)",
-          
+
         },
         {
             id: 2,
             nome: "Workshop de Metodologias Ágeis",
             plataforma: "Evento ou Instituição",
-           
+
         }
     ],
 
@@ -58,13 +58,13 @@ const dadosPortfolio = {
             nome: "Projeto 2 (Ex: Calculadora)",
             descricao: "Uma breve descrição do seu segundo projeto.",
             tecnologias: ["HTML", "CSS", "JavaScript"],
-            
+
         }
     ],
 
     competencias: {
         tecnicas: ["HTML5", "CSS3", "JavaScript (ES6+)", "Node.js", "Express", "EJS", "Git", "SQL Básico"],
-        interpessoais: ["Comunicação", "Trabalho em Equipe", "Resolução de Problemas", "Aprendizado Contínuo", ]
+        interpessoais: ["Comunicação", "Trabalho em Equipe", "Resolução de Problemas", "Aprendizado Contínuo",]
     },
 
     linksRedes: [
@@ -122,40 +122,40 @@ const portfolioController = {
 
 
 
-  adicionarProjeto: (req, res) => {
-     
+    adicionarProjeto: (req, res) => {
+
         console.log("Recebido no POST /projetos/add:", req.body);
-        
-        
+
+
         const { nome, descricao, tecnologias } = req.body;
-        
+
         let arrayTecnologias = [];
         if (tecnologias && typeof tecnologias === 'string') {
             arrayTecnologias = tecnologias.split(',').map(tech => tech.trim());
         }
 
         const novoProjeto = {
-            id: proximoIdProjetos, 
+            id: proximoIdProjetos,
             nome: nome,
             descricao: descricao,
-            tecnologias: arrayTecnologias 
+            tecnologias: arrayTecnologias
         };
 
         dadosPortfolio.projetos.push(novoProjeto);
-        proximoIdProjetos++; 
-        
+        proximoIdProjetos++;
+
         console.log("Projeto novo adicionado:", novoProjeto);
 
         res.redirect('/projetos');
     },
 
     adicionarFormacao: (req, res) => {
-        
+
         console.log("Recebido no POST /formacao/add:", req.body);
 
         const { curso, instituicao, periodo } = req.body;
 
-       
+
         const novaFormacao = {
             id: proximoIdFormacao,
             curso: curso,
@@ -165,41 +165,41 @@ const portfolioController = {
 
         proximoIdFormacao++;
         dadosPortfolio.formacao.push(novaFormacao);
-        
+
         console.log("Formação nova adicionada:", novaFormacao);
 
-        
+
         res.redirect('/formacao');
     },
 
     adicionarCurso: (req, res) => {
         console.log("Recebido no POST /cursos/add:", req.body);
-        
-       
+
+
         const { nome, plataforma } = req.body;
 
-        
+
         const novoCurso = {
             id: proximoIdCursos,
             nome: nome,
             plataforma: plataforma
         };
 
-       proximoIdCursos++;   
+        proximoIdCursos++;
         dadosPortfolio.cursos.push(novoCurso);
-        
+
         console.log("Curso novo adicionado:", novoCurso);
 
-        
+
         res.redirect('/cursos');
     },
 
     adicionarCompetencia: (req, res) => {
         console.log("Recebido no POST /competencias/add:", req.body);
-        
-        const { nome, tipo } = req.body; 
 
-        
+        const { nome, tipo } = req.body;
+
+
         if (nome && tipo === 'tecnica') {
             dadosPortfolio.competencias.tecnicas.push(nome);
             console.log("Competência Técnica adicionada:", nome);
@@ -209,19 +209,19 @@ const portfolioController = {
             console.log("Competência Interpessoal adicionada:", nome);
         }
 
-        
+
         res.redirect('/competencias');
     },
 
-  
-    
+
+
 
     atualizarApresentacao: (req, res) => {
         const { nome, biografia, email, telefone } = req.body;
 
         console.log("Recebido no PUT /apresentacao/update:", req.body);
 
- 
+
         if (nome) {
             dadosPortfolio.apresentacao.nome = nome;
         }
@@ -234,13 +234,101 @@ const portfolioController = {
         if (telefone) {
             dadosPortfolio.apresentacao.contato.telefone = telefone;
         }
-        
+
         console.log("Dados de apresentação atualizados com sucesso!");
 
-        
+
         res.redirect('/');
-    }
+    },
   
+
+    atualizarProjeto: (req, res) => {
+        
+        const { id } = req.params;
+        
+        const { nome, descricao, tecnologias } = req.body;
+
+     
+        const projetoParaAtualizar = dadosPortfolio.projetos.find(p => p.id == id);
+
+        if (projetoParaAtualizar) {
+           
+            projetoParaAtualizar.nome = nome || projetoParaAtualizar.nome;
+            projetoParaAtualizar.descricao = descricao || projetoParaAtualizar.descricao;
+
+            if (tecnologias && typeof tecnologias === 'string') {
+                projetoParaAtualizar.tecnologias = tecnologias.split(',').map(tech => tech.trim());
+            }
+
+            console.log("Projeto atualizado:", projetoParaAtualizar);
+        } else {
+            console.log("Projeto não encontrado com ID:", id);
+        }
+
+        
+        res.redirect('/projetos');
+    },
+
+    
+    atualizarFormacao: (req, res) => {
+        const { id } = req.params;
+        const { curso, instituicao, periodo } = req.body;
+
+        
+        const formacaoParaAtualizar = dadosPortfolio.formacao.find(f => f.id == id);
+
+        if (formacaoParaAtualizar) {
+            formacaoParaAtualizar.curso = curso || formacaoParaAtualizar.curso;
+            formacaoParaAtualizar.instituicao = instituicao || formacaoParaAtualizar.instituicao;
+            formacaoParaAtualizar.periodo = periodo || formacaoParaAtualizar.periodo;
+            console.log("Formação atualizada:", formacaoParaAtualizar);
+        }
+
+        res.redirect('/formacao');
+    },
+
+    
+    atualizarCurso: (req, res) => {
+        const { id } = req.params;
+        const { nome, plataforma } = req.body;
+
+        const cursoParaAtualizar = dadosPortfolio.cursos.find(c => c.id == id);
+
+        if (cursoParaAtualizar) {
+            cursoParaAtualizar.nome = nome || cursoParaAtualizar.nome;
+            cursoParaAtualizar.plataforma = plataforma || cursoParaAtualizar.plataforma;
+            console.log("Curso atualizado:", cursoParaAtualizar);
+        }
+
+        res.redirect('/cursos');
+    },
+
+    
+    atualizarCompetencia: (req, res) => {
+       
+        const { tipo, valorAntigo, valorNovo } = req.body;
+
+        let arrayCompetencias;
+        if (tipo === 'tecnica') {
+            arrayCompetencias = dadosPortfolio.competencias.tecnicas;
+        } else if (tipo === 'interpessoal') {
+            arrayCompetencias = dadosPortfolio.competencias.interpessoais;
+        }
+
+        if (arrayCompetencias && valorAntigo && valorNovo) {
+            
+            const index = arrayCompetencias.indexOf(valorAntigo);
+
+            if (index > -1) {
+                
+                arrayCompetencias[index] = valorNovo;
+                console.log(`Competência '${valorAntigo}' atualizada para '${valorNovo}'`);
+            }
+        }
+
+        res.redirect('/competencias');
+    }
+
 
 };
 
