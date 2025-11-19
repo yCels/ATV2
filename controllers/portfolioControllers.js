@@ -1,11 +1,7 @@
+const db = require('../config/db'); // Importamos nossa conexão
 
-
-let proximoIdProjetos = 3;
-let proximoIdFormacao = 3;
-let proximoIdCursos = 3;
-
+// Mantemos aqui apenas os dados que NÃO estão no banco de dados (estáticos)
 const dadosPortfolio = {
-
     apresentacao: {
         nome: "Celso Moreira Freitas",
         foto: "/images/sua-foto.jpeg",
@@ -15,58 +11,14 @@ const dadosPortfolio = {
             telefone: "(12) 9999-9999"
         }
     },
-
-    formacao: [
-        {
-            id: 1,
-            curso: "Curso Técnico em Elétrica",
-            instituicao: "Nome da Instituição de Ensino",
-            periodo: "2010-2015"
-        },
-        {
-            id: 2,
-            curso: "Graduação em Comoutação",
-            instituicao: "Nome da Universidade",
-            periodo: "2020 - 2024"
-        }
-    ],
-
-    cursos: [
-        {
-            id: 1,
-            nome: "Curso de JavaScript Avançado",
-            plataforma: "Plataforma (Ex: Alura, Udemy, Coursera)",
-
-        },
-        {
-            id: 2,
-            nome: "Workshop de Metodologias Ágeis",
-            plataforma: "Evento ou Instituição",
-
-        }
-    ],
-
-    projetos: [
-        {
-            id: 1,
-            nome: "Portfólio Acadêmico Digital ",
-            descricao: "Projeto desenvolvido com Node.js, Express e EJS para atender aos requisitos da atividade. Inclui rotas, views dinâmicas e controllers.",
-            tecnologias: ["Node.js", "Express", "EJS", "CSS"],
-        },
-        {
-            id: 2,
-            nome: "Projeto 2 (Ex: Calculadora)",
-            descricao: "Uma breve descrição do seu segundo projeto.",
-            tecnologias: ["HTML", "CSS", "JavaScript"],
-
-        }
-    ],
-
+    // Inicializamos vazios, pois serão preenchidos pelo banco a cada requisição
+    formacao: [],
+    cursos: [],
+    projetos: [],
     competencias: {
-        tecnicas: ["HTML5", "CSS3", "JavaScript (ES6+)", "Node.js", "Express", "EJS", "Git", "SQL Básico"],
-        interpessoais: ["Comunicação", "Trabalho em Equipe", "Resolução de Problemas", "Aprendizado Contínuo",]
+        tecnicas: [],
+        interpessoais: []
     },
-
     linksRedes: [
         { nome: "LinkedIn", url: "https://linkedin.com/in/seu-usuario" },
         { nome: "GitHub", url: "https://github.com/yCels" },
@@ -74,334 +26,280 @@ const dadosPortfolio = {
     ]
 };
 
-
 const portfolioController = {
 
+    // --- RENDERIZAÇÃO DAS PÁGINAS (READ) ---
 
     paginaApresentacao: (req, res) => {
-
+        // A página inicial usa apenas dados estáticos, então não precisa de async/await
         res.render('pages/index', {
             pageTitle: "Apresentação",
             dados: dadosPortfolio
         });
     },
 
+    paginaFormacao: async (req, res) => {
+        try {
+            // Buscamos no banco
+            const [rows] = await db.query('SELECT * FROM formacao');
+            
+            // Atualizamos o objeto global com os dados frescos do banco
+            dadosPortfolio.formacao = rows;
 
-    paginaFormacao: (req, res) => {
+            res.render('pages/formacao', {
+                pageTitle: "Formação Acadêmica",
+                dados: dadosPortfolio
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send('Erro ao buscar formação');
+        }
+    },
 
-        res.render('pages/formacao', {
-            pageTitle: "Formação Acadêmica",
-            dados: dadosPortfolio
-        });
+    paginaCursos: async (req, res) => {
+        try {
+            const [rows] = await db.query('SELECT * FROM cursos');
+            dadosPortfolio.cursos = rows;
+
+            res.render('pages/cursos', {
+                pageTitle: "Cursos e Certificações",
+                dados: dadosPortfolio
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send('Erro ao buscar cursos');
+        }
+    },
+
+    paginaProjetos: async (req, res) => {
+        try {
+            const [rows] = await db.query('SELECT * FROM projetos');
+
+            // Tratamento especial: Converter string "JS, HTML" em array ["JS", "HTML"]
+            dadosPortfolio.projetos = rows.map(p => ({
+                ...p,
+                tecnologias: p.tecnologias ? p.tecnologias.split(',').map(t => t.trim()) : []
+            }));
+
+            res.render('pages/projetos', {
+                pageTitle: "Projetos",
+                dados: dadosPortfolio
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send('Erro ao buscar projetos');
+        }
+    },
+
+    paginaCompetencias: async (req, res) => {
+        try {
+            const [rows] = await db.query('SELECT * FROM competencias');
+
+            // Separamos as competências em duas listas para a view funcionar igual antes
+            // Usamos 'map' para pegar só o nome, pois a view espera strings simples na lista
+            dadosPortfolio.competencias.tecnicas = rows
+                .filter(c => c.tipo === 'tecnica')
+                .map(c => c.nome);
+
+            dadosPortfolio.competencias.interpessoais = rows
+                .filter(c => c.tipo === 'interpessoal')
+                .map(c => c.nome);
+
+            res.render('pages/competencias', {
+                pageTitle: "Competências",
+                dados: dadosPortfolio
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send('Erro ao buscar competências');
+        }
     },
 
 
-    paginaCursos: (req, res) => {
-        res.render('pages/cursos', {
-            pageTitle: "Cursos e Certificações",
-            dados: dadosPortfolio
-        });
-    },
+    // --- OPERAÇÕES DE CRIAÇÃO (CREATE) ---
 
-
-    paginaProjetos: (req, res) => {
-        res.render('pages/projetos', {
-            pageTitle: "Projetos",
-            dados: dadosPortfolio
-        });
-    },
-
-
-    paginaCompetencias: (req, res) => {
-        res.render('pages/competencias', {
-            pageTitle: "Competências",
-            dados: dadosPortfolio
-        });
-    },
-
-
-
-
-    adicionarProjeto: (req, res) => {
-
-        console.log("Recebido no POST /projetos/add:", req.body);
-
-
+    adicionarProjeto: async (req, res) => {
         const { nome, descricao, tecnologias } = req.body;
-
-        let arrayTecnologias = [];
-        if (tecnologias && typeof tecnologias === 'string') {
-            arrayTecnologias = tecnologias.split(',').map(tech => tech.trim());
+        try {
+            await db.query(
+                'INSERT INTO projetos (nome, descricao, tecnologias) VALUES (?, ?, ?)',
+                [nome, descricao, tecnologias]
+            );
+            res.redirect('/projetos');
+        } catch (error) {
+            console.log(error);
+            res.redirect('/projetos');
         }
-
-        const novoProjeto = {
-            id: proximoIdProjetos,
-            nome: nome,
-            descricao: descricao,
-            tecnologias: arrayTecnologias
-        };
-
-        dadosPortfolio.projetos.push(novoProjeto);
-        proximoIdProjetos++;
-
-        console.log("Projeto novo adicionado:", novoProjeto);
-
-        res.redirect('/projetos');
     },
 
-    adicionarFormacao: (req, res) => {
-
-        console.log("Recebido no POST /formacao/add:", req.body);
-
+    adicionarFormacao: async (req, res) => {
         const { curso, instituicao, periodo } = req.body;
-
-
-        const novaFormacao = {
-            id: proximoIdFormacao,
-            curso: curso,
-            instituicao: instituicao,
-            periodo: periodo
-        };
-
-        proximoIdFormacao++;
-        dadosPortfolio.formacao.push(novaFormacao);
-
-        console.log("Formação nova adicionada:", novaFormacao);
-
-
-        res.redirect('/formacao');
-    },
-
-    adicionarCurso: (req, res) => {
-        console.log("Recebido no POST /cursos/add:", req.body);
-
-
-        const { nome, plataforma } = req.body;
-
-
-        const novoCurso = {
-            id: proximoIdCursos,
-            nome: nome,
-            plataforma: plataforma
-        };
-
-        proximoIdCursos++;
-        dadosPortfolio.cursos.push(novoCurso);
-
-        console.log("Curso novo adicionado:", novoCurso);
-
-
-        res.redirect('/cursos');
-    },
-
-    adicionarCompetencia: (req, res) => {
-        console.log("Recebido no POST /competencias/add:", req.body);
-
-        const { nome, tipo } = req.body;
-
-
-        if (nome && tipo === 'tecnica') {
-            dadosPortfolio.competencias.tecnicas.push(nome);
-            console.log("Competência Técnica adicionada:", nome);
-
-        } else if (nome && tipo === 'interpessoal') {
-            dadosPortfolio.competencias.interpessoais.push(nome);
-            console.log("Competência Interpessoal adicionada:", nome);
+        try {
+            await db.query(
+                'INSERT INTO formacao (curso, instituicao, periodo) VALUES (?, ?, ?)',
+                [curso, instituicao, periodo]
+            );
+            res.redirect('/formacao');
+        } catch (error) {
+            console.log(error);
+            res.redirect('/formacao');
         }
+    },
 
+    adicionarCurso: async (req, res) => {
+        const { nome, plataforma } = req.body;
+        try {
+            await db.query(
+                'INSERT INTO cursos (nome, plataforma) VALUES (?, ?)',
+                [nome, plataforma]
+            );
+            res.redirect('/cursos');
+        } catch (error) {
+            console.log(error);
+            res.redirect('/cursos');
+        }
+    },
 
-        res.redirect('/competencias');
+    adicionarCompetencia: async (req, res) => {
+        const { nome, tipo } = req.body;
+        try {
+            // Precisamos validar se o tipo é válido
+            if (nome && (tipo === 'tecnica' || tipo === 'interpessoal')) {
+                await db.query(
+                    'INSERT INTO competencias (nome, tipo) VALUES (?, ?)',
+                    [nome, tipo]
+                );
+            }
+            res.redirect('/competencias');
+        } catch (error) {
+            console.log(error);
+            res.redirect('/competencias');
+        }
     },
 
 
-
-
+    // --- OPERAÇÕES DE ATUALIZAÇÃO (UPDATE) ---
+    // Nota: A página de apresentação é estática neste exemplo, então mantivemos a lógica original
+    // Se quiser persistir, precisaria criar uma tabela 'apresentacao' no banco.
     atualizarApresentacao: (req, res) => {
         const { nome, biografia, email, telefone } = req.body;
-
-        console.log("Recebido no PUT /apresentacao/update:", req.body);
-
-
-        if (nome) {
-            dadosPortfolio.apresentacao.nome = nome;
-        }
-        if (biografia) {
-            dadosPortfolio.apresentacao.biografia = biografia;
-        }
-        if (email) {
-            dadosPortfolio.apresentacao.contato.email = email;
-        }
-        if (telefone) {
-            dadosPortfolio.apresentacao.contato.telefone = telefone;
-        }
-
-        console.log("Dados de apresentação atualizados com sucesso!");
-
-
+        if (nome) dadosPortfolio.apresentacao.nome = nome;
+        if (biografia) dadosPortfolio.apresentacao.biografia = biografia;
+        if (email) dadosPortfolio.apresentacao.contato.email = email;
+        if (telefone) dadosPortfolio.apresentacao.contato.telefone = telefone;
         res.redirect('/');
     },
-  
 
-    atualizarProjeto: (req, res) => {
-        
+    atualizarProjeto: async (req, res) => {
         const { id } = req.params;
-        
         const { nome, descricao, tecnologias } = req.body;
-
-     
-        const projetoParaAtualizar = dadosPortfolio.projetos.find(p => p.id == id);
-
-        if (projetoParaAtualizar) {
-           
-            projetoParaAtualizar.nome = nome || projetoParaAtualizar.nome;
-            projetoParaAtualizar.descricao = descricao || projetoParaAtualizar.descricao;
-
-            if (tecnologias && typeof tecnologias === 'string') {
-                projetoParaAtualizar.tecnologias = tecnologias.split(',').map(tech => tech.trim());
-            }
-
-            console.log("Projeto atualizado:", projetoParaAtualizar);
-        } else {
-            console.log("Projeto não encontrado com ID:", id);
+        try {
+            // O SQL UPDATE só altera os campos se passarmos novos valores
+            // Aqui simplifiquei assumindo que o form envia tudo. 
+            // Num cenário real, você faria verificações de quais campos vieram.
+            await db.query(
+                'UPDATE projetos SET nome = ?, descricao = ?, tecnologias = ? WHERE id = ?',
+                [nome, descricao, tecnologias, id]
+            );
+            res.redirect('/projetos');
+        } catch (error) {
+            console.log(error);
+            res.redirect('/projetos');
         }
-
-        
-        res.redirect('/projetos');
     },
 
-    
-    atualizarFormacao: (req, res) => {
+    atualizarFormacao: async (req, res) => {
         const { id } = req.params;
         const { curso, instituicao, periodo } = req.body;
-
-        
-        const formacaoParaAtualizar = dadosPortfolio.formacao.find(f => f.id == id);
-
-        if (formacaoParaAtualizar) {
-            formacaoParaAtualizar.curso = curso || formacaoParaAtualizar.curso;
-            formacaoParaAtualizar.instituicao = instituicao || formacaoParaAtualizar.instituicao;
-            formacaoParaAtualizar.periodo = periodo || formacaoParaAtualizar.periodo;
-            console.log("Formação atualizada:", formacaoParaAtualizar);
+        try {
+            await db.query(
+                'UPDATE formacao SET curso = ?, instituicao = ?, periodo = ? WHERE id = ?',
+                [curso, instituicao, periodo, id]
+            );
+            res.redirect('/formacao');
+        } catch (error) {
+            console.log(error);
+            res.redirect('/formacao');
         }
-
-        res.redirect('/formacao');
     },
 
-    
-    atualizarCurso: (req, res) => {
+    atualizarCurso: async (req, res) => {
         const { id } = req.params;
         const { nome, plataforma } = req.body;
-
-        const cursoParaAtualizar = dadosPortfolio.cursos.find(c => c.id == id);
-
-        if (cursoParaAtualizar) {
-            cursoParaAtualizar.nome = nome || cursoParaAtualizar.nome;
-            cursoParaAtualizar.plataforma = plataforma || cursoParaAtualizar.plataforma;
-            console.log("Curso atualizado:", cursoParaAtualizar);
+        try {
+            await db.query(
+                'UPDATE cursos SET nome = ?, plataforma = ? WHERE id = ?',
+                [nome, plataforma, id]
+            );
+            res.redirect('/cursos');
+        } catch (error) {
+            console.log(error);
+            res.redirect('/cursos');
         }
-
-        res.redirect('/cursos');
     },
 
-    
-    atualizarCompetencia: (req, res) => {
-       
+    atualizarCompetencia: async (req, res) => {
         const { tipo, valorAntigo, valorNovo } = req.body;
-
-        let arrayCompetencias;
-        if (tipo === 'tecnica') {
-            arrayCompetencias = dadosPortfolio.competencias.tecnicas;
-        } else if (tipo === 'interpessoal') {
-            arrayCompetencias = dadosPortfolio.competencias.interpessoais;
+        try {
+            // Como não usamos ID na view de competências, atualizamos pelo nome antigo + tipo
+            await db.query(
+                'UPDATE competencias SET nome = ? WHERE nome = ? AND tipo = ?',
+                [valorNovo, valorAntigo, tipo]
+            );
+            res.redirect('/competencias');
+        } catch (error) {
+            console.log(error);
+            res.redirect('/competencias');
         }
-
-        if (arrayCompetencias && valorAntigo && valorNovo) {
-            
-            const index = arrayCompetencias.indexOf(valorAntigo);
-
-            if (index > -1) {
-                
-                arrayCompetencias[index] = valorNovo;
-                console.log(`Competência '${valorAntigo}' atualizada para '${valorNovo}'`);
-            }
-        }
-
-        res.redirect('/competencias');
     },
 
-    deletarProjeto: (req, res) => {
-        
+
+    // --- OPERAÇÕES DE EXCLUSÃO (DELETE) ---
+
+    deletarProjeto: async (req, res) => {
         const { id } = req.params;
-
-        
-        const index = dadosPortfolio.projetos.findIndex(p => p.id == id);
-
-        // 3. Se index for > -1 (ou seja, se encontrou o item)...
-        if (index > -1) {
-            // 4. ...usamos splice() para remover 1 item daquela posição
-            dadosPortfolio.projetos.splice(index, 1);
-            console.log("Projeto deletado com ID:", id);
+        try {
+            await db.query('DELETE FROM projetos WHERE id = ?', [id]);
+            res.redirect('/projetos');
+        } catch (error) {
+            console.log(error);
+            res.redirect('/projetos');
         }
-
-        // 5. Redirecionamos de volta para a página
-        res.redirect('/projetos');
     },
 
-    deletarFormacao: (req, res) => {
+    deletarFormacao: async (req, res) => {
         const { id } = req.params;
-        
-        // Lógica idêntica ao deletarProjeto
-        const index = dadosPortfolio.formacao.findIndex(f => f.id == id);
-
-        if (index > -1) {
-            dadosPortfolio.formacao.splice(index, 1);
-            console.log("Formação deletada com ID:", id);
+        try {
+            await db.query('DELETE FROM formacao WHERE id = ?', [id]);
+            res.redirect('/formacao');
+        } catch (error) {
+            console.log(error);
+            res.redirect('/formacao');
         }
-
-        res.redirect('/formacao');
     },
 
-    deletarCurso: (req, res) => {
+    deletarCurso: async (req, res) => {
         const { id } = req.params;
-        
-        // Lógica idêntica ao deletarProjeto
-        const index = dadosPortfolio.cursos.findIndex(c => c.id == id);
-
-        if (index > -1) {
-            dadosPortfolio.cursos.splice(index, 1);
-            console.log("Curso deletado com ID:", id);
+        try {
+            await db.query('DELETE FROM cursos WHERE id = ?', [id]);
+            res.redirect('/cursos');
+        } catch (error) {
+            console.log(error);
+            res.redirect('/cursos');
         }
-
-        res.redirect('/cursos');
     },
 
-    deletarCompetencia: (req, res) => {
-        // 1. Pegamos os dados do body (que virão do formulário)
+    deletarCompetencia: async (req, res) => {
         const { nome, tipo } = req.body;
-
-        let arrayCompetencias;
-        if (tipo === 'tecnica') {
-            arrayCompetencias = dadosPortfolio.competencias.tecnicas;
-        } else if (tipo === 'interpessoal') {
-            arrayCompetencias = dadosPortfolio.competencias.interpessoais;
+        try {
+            // Deletamos baseados no nome e tipo, já que a view não passa ID
+            await db.query('DELETE FROM competencias WHERE nome = ? AND tipo = ?', [nome, tipo]);
+            res.redirect('/competencias');
+        } catch (error) {
+            console.log(error);
+            res.redirect('/competencias');
         }
-
-        if (arrayCompetencias && nome) {
-            // 2. Encontramos o índice da *string* no array
-            const index = arrayCompetencias.indexOf(nome);
-
-            if (index > -1) {
-                // 3. Removemos a string
-                arrayCompetencias.splice(index, 1);
-                console.log(`Competência '${nome}' deletada.`);
-            }
-        }
-
-        res.redirect('/competencias');
     }
-
-
-
 
 };
 
